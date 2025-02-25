@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Define installation URL
+RUSTUP_URL="https://sh.rustup.rs"
+
+# Check if Rust is already installed
+if command -v rustc &>/dev/null; then
+    echo "Rust is already installed. Current version:"
+    rustc --version
+    exit 0
+fi
+
+echo "Installing Rust using rustup..."
+
+curl --proto '=https' --tlsv1.2 -sSf $RUSTUP_URL | sh -s -- -y
+
+export PATH="$HOME/.cargo/bin:$PATH"
+
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+
+source ~/.zshrc 2>/dev/null
+
+# Verify installation
+if command -v rustc &>/dev/null; then
+    echo "Rust installation successful!"
+    rustc --version
+else
+    echo "Rust installation failed. Please check for errors."
+    exit 1
+fi
+
