@@ -37,7 +37,7 @@ log "run: filter=$filter"
 
 for script in $scripts; do
     if echo "$script" | grep -qv "$filter"; then
-        log "filtered: $filter -- $script"
+        log "filtered: $script"
         continue
     fi
     log "running script: $script"
