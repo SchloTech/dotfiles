@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Ensure the NVM directory exists
+export NVM_DIR="$HOME/.nvm"
+if [ ! -d "$NVM_DIR" ]; then
+  echo "Creating NVM directory at $NVM_DIR..."
+  mkdir -p "$NVM_DIR"
+fi
+
+# Install nvm if it's not already installed
+if [ ! -d "$NVM_DIR" ] || [ ! -f "$NVM_DIR/nvm.sh" ]; then
+  echo "Installing nvm..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+else
+  echo "nvm is already installed."
+fi
+
+# Source nvm script to add it to the current shell session
+# This is necessary to use nvm and install Node.js in the script
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  \. "$NVM_DIR/nvm.sh"
+else
+  echo "Error: nvm.sh not found. Exiting."
+  exit 1
+fi
+
+# Install the latest Node.js version (which includes npm)
+echo "Installing the latest Node.js version..."
+nvm install node
+
+# Set the default Node.js version to the one just installed
+nvm alias default node
+
+# Define the profile file
+PROFILE="$HOME/.zshrc"
+
+# Add nvm initialization to the profile if it's not already present
+if ! grep -q 'export NVM_DIR="$HOME/.nvm"' "$PROFILE"; then
+  echo "Adding nvm initialization to $PROFILE..."
+  {
+    echo ''
+    echo '# NVM initialization'
+    echo 'export NVM_DIR="$HOME/.nvm"'
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm'
+  } >> "$PROFILE"
+else
+  echo "nvm initialization already present in $PROFILE."
+fi
+
+echo "Installation complete. Please restart your terminal or run 'source $PROFILE' to start using nvm and npm."
+

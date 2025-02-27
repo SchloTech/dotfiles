@@ -18,7 +18,6 @@ return {
                     "helm_ls",
                     "html",
                     "ts_ls",
-                    "jqls",
                     "jsonls",
                     "grammarly",
                     "jedi_language_server",
@@ -42,7 +41,6 @@ return {
       lspconfig.helm_ls.setup({})
       lspconfig.html.setup({})
       lspconfig.ts_ls.setup({})
-      lspconfig.jqls.setup({})
       lspconfig.jsonls.setup({})
       lspconfig.grammarly.setup({})
       lspconfig.jedi_language_server.setup({})

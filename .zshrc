@@ -9,5 +9,13 @@ source $HOME/.zsh_profile
 
 export EDITOR='nvim'
 export VISUAL='nvim'
+export OPENSSL_DIR="/usr/lib/ssl"
+export OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
+export OPENSSL_INCLUDE_DIR="/usr/include/openssl"
+
 
 export PATH="$HOME/.cargo/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
