@@ -7,12 +7,17 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 source $HOME/.zsh_profile
 
-export EDITOR='nvim'
-export VISUAL='nvim'
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+  export VISUAL='vim'
+else
+  export EDITOR='nvim'
+  export VISUAL='nvim'
+fi
+
 export OPENSSL_DIR="/usr/lib/ssl"
 export OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 export OPENSSL_INCLUDE_DIR="/usr/include/openssl"
-
 
 export PATH="$HOME/.cargo/bin:$PATH"
 
