@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# neovim javascript linter
+npm install -g eslint_d
