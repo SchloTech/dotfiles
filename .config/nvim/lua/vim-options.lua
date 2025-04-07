@@ -19,9 +19,11 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 10
 vim.opt.clipboard:prepend { 'unnamed', 'unnamedplus' }
 
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-  pattern = "*.tpl",
-  callback = function()
-    vim.bo.filetype = "helm"
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+  pattern = "*",
+  callback = function(args)
+    if args.file:match("%.tpl$") then
+      vim.bo.filetype = "helm"
+    end
   end,
 })
