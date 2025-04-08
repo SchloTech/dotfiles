@@ -3,6 +3,9 @@
 script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
 dry="0"
 
+# Source OS detection utilities
+source "$script_dir/utils/os_detect.sh"
+
 while [[ $# > 0 ]]; do
     if [[ "$1" == "--dry" ]]; then
         dry="1"
@@ -28,6 +31,25 @@ execute() {
 
 log "--------- dev-env ---------"
 
+# Detect OS
+os=$(detect_os)
+log "Detected OS: $os"
+
+# Ensure XDG_CONFIG_HOME is set
+if [ -z "$XDG_CONFIG_HOME" ]; then
+    if [[ "$os" == "macos" ]]; then
+        export XDG_CONFIG_HOME="$HOME/.config"
+    else
+        export XDG_CONFIG_HOME="$HOME/.config"
+    fi
+    log "Set XDG_CONFIG_HOME to $XDG_CONFIG_HOME"
+fi
+
+# Create config directory if it doesn't exist
+if [ ! -d "$XDG_CONFIG_HOME" ]; then
+    execute mkdir -p "$XDG_CONFIG_HOME"
+fi
+
 copy_dir() {
     from=$1
     to=$2
@@ -35,6 +57,7 @@ copy_dir() {
     pushd $from > /dev/null
     dirs=$(find . -maxdepth 1 -mindepth 1 -type d)
     for dir in $dirs; do
+        execute mkdir -p $to/$dir
         execute rm -rf $to/$dir
         execute cp -r $dir $to/$dir
     done
@@ -46,12 +69,16 @@ copy_file() {
     to=$2
     name=$(basename $from)
 
-    execute rm $to/$name
-    execute cp $from $to/$name
+    if [ -f "$to/$name" ]; then
+        execute rm "$to/$name"
+    fi
+    execute cp "$from" "$to/$name"
 }
 
 copy_dir .config $XDG_CONFIG_HOME
 
 copy_file .zshrc $HOME
 copy_file .zsh_profile $HOME
- 
+
+log "Configuration files installed successfully!"
+

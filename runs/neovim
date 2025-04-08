@@ -1,8 +1,30 @@
 #!/usr/bin/env bash
 
-git clone -b v0.10.4 https://github.com/neovim/neovim.git $HOME/personal/neovim
-sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
 
-cd $HOME/personal/neovim
-make CMAKE_BUILD_TYPE=RelWithDebInfo
-sudo make install
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Linux dependencies
+    install_packages cmake gettext lua5.1 liblua5.1-0-dev
+
+    # Clone and build from source
+    git clone -b v0.10.4 https://github.com/neovim/neovim.git $HOME/personal/neovim
+    cd $HOME/personal/neovim
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+
+elif [[ "$os" == "macos" ]]; then
+    # macOS installation using Homebrew
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+
+    # Install Neovim
+    brew install neovim
+
+else
+    echo "Unsupported operating system"
+    exit 1
+fi

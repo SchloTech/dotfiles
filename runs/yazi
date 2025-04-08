@@ -1,10 +1,38 @@
 #!/usr/bin/env bash
 
-# install option dependencies
-sudo apt install ffmpeg 7zip jq poppler-utils fd-find ripgrep fzf zoxide imagemagick -y
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
 
-git clone https://github.com/sxyazi/yazi.git $HOME/personal/yazi
-cd $HOME/personal/yazi
-cargo build --release --locked
+os=$(detect_os)
 
-sudo mv target/release/yazi target/release/ya /usr/local/bin/
+if [[ "$os" == "linux" ]]; then
+    # Linux dependencies
+    install_packages ffmpeg p7zip jq poppler-utils fd-find ripgrep fzf zoxide imagemagick
+
+    # Build from source
+    git clone https://github.com/sxyazi/yazi.git $HOME/personal/yazi
+    cd $HOME/personal/yazi
+    cargo build --release --locked
+
+    sudo mv target/release/yazi target/release/ya /usr/local/bin/
+
+elif [[ "$os" == "macos" ]]; then
+    # macOS dependencies
+    install_packages ffmpeg p7zip jq poppler fd ripgrep fzf zoxide imagemagick
+
+    # Option 1: Install via Homebrew
+    if command -v brew &>/dev/null; then
+        brew install yazi
+    else
+        # Option 2: Build from source
+        git clone https://github.com/sxyazi/yazi.git $HOME/personal/yazi
+        cd $HOME/personal/yazi
+        cargo build --release --locked
+
+        # Install binaries
+        sudo mv target/release/yazi target/release/ya /usr/local/bin/
+    fi
+else
+    echo "Unsupported operating system"
+    exit 1
+fi

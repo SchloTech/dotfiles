@@ -5,7 +5,17 @@ filter=""
 dry="0"
 
 cd $script_dir
-scripts=$(find runs -maxdepth 1 -mindepth 1 -executable -type f)
+
+# Make sure the utils directory exists
+if [ ! -d "$script_dir/utils" ]; then
+    mkdir -p "$script_dir/utils"
+fi
+
+# Make sure all scripts are executable
+find runs -type f -not -path "*/\.*" -exec chmod +x {} \;
+
+# Find all scripts in the runs directory
+scripts=$(find runs -maxdepth 1 -mindepth 1 -type f -not -path "*/\.*")
 
 while [[ $# > 0 ]]; do
     if [[ "$1" == "--dry" ]]; then
