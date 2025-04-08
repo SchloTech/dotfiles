@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+SYNTAX_REPO="https://github.com/zsh-users/zsh-syntax-highlighting.git"
+SUGGEST_REPO="https://github.com/zsh-users/zsh-autosuggestions.git"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+PLUGINS_DIR="$ZSH_CUSTOM/plugins"
+
+# Check if git is installed
+if ! command -v git &>/dev/null; then
+    echo "git is required but not installed. Please install git first."
+    exit 1
+fi
+
+# Check if Oh My Zsh is installed
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Oh My Zsh is not installed. Please install it first."
+    exit 1
+fi
+
+# Create plugins directory if it doesn't exist
+mkdir -p "$PLUGINS_DIR"
+
+# Install/Update zsh-syntax-highlighting
+if [ -d "$PLUGINS_DIR/zsh-syntax-highlighting" ]; then
+    echo "Updating zsh-syntax-highlighting..."
+    cd "$PLUGINS_DIR/zsh-syntax-highlighting" && git pull
+else
+    echo "Installing zsh-syntax-highlighting..."
+    git clone --depth=1 "$SYNTAX_REPO" "$PLUGINS_DIR/zsh-syntax-highlighting"
+fi
+
+# Install/Update zsh-autosuggestions
+if [ -d "$PLUGINS_DIR/zsh-autosuggestions" ]; then
+    echo "Updating zsh-autosuggestions..."
+    cd "$PLUGINS_DIR/zsh-autosuggestions" && git pull
+else
+    echo "Installing zsh-autosuggestions..."
+    git clone --depth=1 "$SUGGEST_REPO" "$PLUGINS_DIR/zsh-autosuggestions"
+fi
+
+echo "Plugins have been installed/updated."
+echo "To activate them, add these plugins to your ~/.zshrc plugins list:"
+echo "plugins=(... zsh-syntax-highlighting zsh-autosuggestions)"
+

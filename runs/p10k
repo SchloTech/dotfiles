@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+P10K_REPO="https://github.com/romkatv/powerlevel10k.git"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+P10K_DIR="$ZSH_CUSTOM/themes/powerlevel10k"
+
+# Check if git is installed
+if ! command -v git &>/dev/null; then
+    echo "git is required but not installed. Please install git first."
+    exit 1
+fi
+
+# Check if Oh My Zsh is installed
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Oh My Zsh is not installed. Please install it first."
+    exit 1
+fi
+
+# Install/Update Powerlevel10k
+if [ -d "$P10K_DIR" ]; then
+    echo "Updating Powerlevel10k..."
+    cd "$P10K_DIR" && git pull
+else
+    echo "Installing Powerlevel10k..."
+    git clone --depth=1 "$P10K_REPO" "$P10K_DIR"
+fi
+
+echo "Powerlevel10k has been installed/updated."
+echo "To activate it, set 'ZSH_THEME=\"powerlevel10k/powerlevel10k\"' in your ~/.zshrc"
+
