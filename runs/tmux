@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Colors
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+BLUE=$(tput setaf 4)
+RESET=$(tput sgr0)
+
+info() {
+    printf "%s\n" "${BLUE}$1${RESET}"
+}
+
+success() {
+    printf "%s\n" "${GREEN}$1${RESET}"
+}
+
+error() {
+    printf "%s\n" "${RED}$1${RESET}" >&2
+}
+
+detect_platform() {
+    case "$(uname -s)" in
+        "Darwin")
+            echo "macos"
+            ;;
+        "Linux")
+            echo "linux"
+            ;;
+        *)
+            error "Unsupported platform: $(uname -s)"
+            exit 1
+            ;;
+    esac
+}
+
+install_tmux_macos() {
+    if ! command -v brew >/dev/null; then
+        error "Homebrew is required but not installed. Please install Homebrew first."
+        exit 1
+    fi
+
+    info "Installing tmux via Homebrew..."
+    if brew list tmux &>/dev/null; then
+        info "tmux is already installed, updating..."
+        brew upgrade tmux
+    else
+        brew install tmux
+    fi
+}
+
+install_tmux_linux() {
+    if ! command -v apt-get >/dev/null; then
+        error "This script currently only supports Ubuntu/Debian systems"
+        exit 1
+    fi
+
+    info "Installing tmux via apt..."
+    sudo apt-get update
+    sudo apt-get install -y tmux
+}
+
+main() {
+    info "Installing tmux..."
+    
+    PLATFORM="$(detect_platform)"
+    
+    case "$PLATFORM" in
+        "macos")
+            install_tmux_macos
+            ;;
+        "linux")
+            install_tmux_linux
+            ;;
+    esac
+
+    if command -v tmux >/dev/null; then
+        VERSION=$(tmux -V)
+        success "✓ tmux installed successfully! ($VERSION)"
+    else
+        error "Failed to install tmux"
+        exit 1
+    fi
+}
+
+main "$@"
+
