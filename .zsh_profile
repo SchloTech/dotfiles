@@ -10,6 +10,8 @@ export OPENSSL_DIR="/usr/lib/ssl"
 export OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 export OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/scripts:$PATH"
+export PATH="$HOME/personal:$PATH"
 export NVM_DIR="$HOME/.nvm"
 export XDG_CONFIG_HOME=$HOME/.config
 

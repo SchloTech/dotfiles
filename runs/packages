@@ -16,3 +16,7 @@ else
     echo "Unsupported operating system"
     exit 1
 fi
+
+# FZF
+git clone git@github.com:junegunn/fzf.git $HOME/personal/fzf
+$HOME/personal/fzf/install --key-bindings --completion --no-update-rc
