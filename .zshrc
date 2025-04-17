@@ -19,9 +19,17 @@ source $HOME/.zsh_profile
 source $HOME/.api_keys
 source $HOME/.aws_profile
 
-eval "$(ssh-agent -s)"
-ssh-add .ssh/id_rsa
-#ssh-add ~/.ssh/id_ed25519
+# Start ssh-agent silently and only if not already running
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+
+# Add SSH key if it exists (checking ed25519 first, then rsa as fallback)
+if [[ -f ~/.ssh/id_ed25519 ]]; then
+    ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
+elif [[ -f ~/.ssh/id_rsa ]]; then
+    ssh-add -q ~/.ssh/id_rsa 2>/dev/null
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -29,6 +37,9 @@ export NVM_DIR="$HOME/.nvm"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Tmux sessionizer
+bindkey -s '^F' 'tmux-sessionizer\n'
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
