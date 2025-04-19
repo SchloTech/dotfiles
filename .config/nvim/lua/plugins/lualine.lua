@@ -3,7 +3,10 @@ return {
   config = function()
     require('lualine').setup({
       options = {
-        theme = 'nord'
+        theme = 'auto',  -- This will automatically match your colorscheme
+        transparent = true,
+        component_separators = { left = '', right = ''},
+        section_separators = { left = '', right = ''},
       },
       sections = {
         lualine_c = {

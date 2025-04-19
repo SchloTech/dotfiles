@@ -1,4 +1,5 @@
 vim.g.mapleader = " "
+vim.g.transparent_enabled = true
 
 vim.opt.nu = true
 vim.opt.relativenumber = true
