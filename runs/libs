@@ -4,4 +4,4 @@
 git clone git@github.com:junegunn/fzf.git $HOME/personal/fzf
 $HOME/personal/fzf/install --key-bindings --completion --no-update-rc
 
-git clone https://github.com/tmux-glugins ~/.tmux/plugins/tpm
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
