@@ -3,10 +3,10 @@ return {
     event = "VeryLazy",
     version = false,   -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
     opts = {
-        provider = "claude", 
+        provider = "claude",
         claude = {
             endpoint = "https://api.anthropic.com",
-            model = "claude-3-5-sonnet-20241022",
+            model = "claude-sonnet-4-20250514	",
             temperature = 0,
             max_tokens = 4096,
         },
