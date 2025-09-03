@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-if [ -f /usr/local/opt/fzf/install ]; then
-    /usr/local/opt/fzf/install --all
-fi
