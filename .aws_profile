@@ -1,0 +1,3 @@
+alias aws-sso='aws sso login --profile sso'
+alias aws-sso-logout='aws sso logout --profile sso'
+alis-profile='export AWS_PROFILE=sso'
