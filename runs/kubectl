@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
+
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Install dependencies
+    install_packages curl sudo
+
+    # Download and install kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    rm kubectl
+elif [[ "$os" == "macos" ]]; then
+    # Install dependencies
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+
+    # Install kubectl
+    brew install kubectl
+else
+    echo "Unsupported operating system"
+    exit 1
+fi
