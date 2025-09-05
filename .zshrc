@@ -9,12 +9,16 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+# Disable oh-my-zsh command auto-correction.
+ENABLE_CORRECTION="false"
 
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
+
+# Ensure zsh does not attempt command correction.
+unsetopt correct_all
+unsetopt correct
 source $HOME/.zsh_profile
 source $HOME/.api_keys
 source $HOME/.aws_profile
