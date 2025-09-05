@@ -1,6 +1,6 @@
 alias aws-sso='aws sso login --profile sso'
 alias aws-sso-logout='aws sso logout --profile sso'
 
-alis aws-profile='export AWS_PROFILE=sso && echo "AWS_PROFILE set to sso"'
+alias aws-profile='export AWS_PROFILE=sso && echo "AWS_PROFILE set to sso"'
 alias aws-profile-logout='unset AWS_PROFILE && echo "AWS_PROFILE unset"'
 
