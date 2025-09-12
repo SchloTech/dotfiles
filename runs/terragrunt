@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
+
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Install dependencies
+    install_packages curl sudo
+
+    # Detect architecture for correct binary
+    arch=$(uname -m)
+    case "$arch" in
+        x86_64|amd64)
+            tg_arch="amd64"
+            ;;
+        arm64|aarch64)
+            tg_arch="arm64"
+            ;;
+        *)
+            echo "Unsupported architecture: $arch"
+            exit 1
+            ;;
+    esac
+
+    # Download and install Terragrunt
+    url="https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_${tg_arch}"
+    curl -L -o terragrunt "$url"
+    chmod +x terragrunt
+    sudo install -o root -g root -m 0755 terragrunt /usr/local/bin/terragrunt
+    rm terragrunt
+elif [[ "$os" == "macos" ]]; then
+    # Install dependencies
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+
+    # Install Terragrunt
+    brew install terragrunt
+else
+    echo "Unsupported operating system"
+    exit 1
+fi
+
