@@ -7,13 +7,12 @@ os=$(detect_os)
 
 if [[ "$os" == "linux" ]]; then
     # Linux packages
-    install_packages unzip python3-venv libssl-dev pkg-config luarocks ripgrep fzf wl-clipboard
+    install_packages unzip python3-venv libssl-dev pkg-config luarocks ripgrep fzf wl-clipboard tree
 elif [[ "$os" == "macos" ]]; then
     # macOS packages
-    install_packages unzip python openssl pkg-config luarocks ripgrep fzf
+    install_packages unzip python openssl pkg-config luarocks ripgrep fzf tree
     # macOS doesn't need wl-clipboard as it has its own clipboard system
 else
     echo "Unsupported operating system"
     exit 1
 fi
-
