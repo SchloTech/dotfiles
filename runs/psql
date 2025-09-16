@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
+
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Install PostgreSQL client (psql)
+    install_packages postgresql-client
+elif [[ "$os" == "macos" ]]; then
+    # Ensure Homebrew is available
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+
+    # Install libpq which provides psql (keg-only)
+    brew install libpq
+
+    # Add libpq's bin to PATH for future shells
+    brew_prefix=$(brew --prefix 2>/dev/null)
+    libpq_bin="$brew_prefix/opt/libpq/bin"
+    if [ -d "$libpq_bin" ]; then
+        if [ -f "$HOME/.zshrc" ] && ! grep -q "$libpq_bin" "$HOME/.zshrc"; then
+            echo "export PATH=\"$libpq_bin:\$PATH\"" >> "$HOME/.zshrc"
+            echo "Added $libpq_bin to PATH in .zshrc"
+        fi
+    fi
+
+    # Also try linking so psql is immediately available
+    brew link --force libpq >/dev/null 2>&1 || true
+else
+    echo "Unsupported operating system"
+    exit 1
+fi
+
