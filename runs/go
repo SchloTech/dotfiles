@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
+
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Install dependencies
+    install_packages curl sudo tar
+
+    # Determine architecture
+    arch=$(uname -m)
+    case "$arch" in
+        x86_64|amd64)
+            go_arch="amd64"
+            ;;
+        arm64|aarch64)
+            go_arch="arm64"
+            ;;
+        *)
+            echo "Unsupported architecture: $arch"
+            exit 1
+            ;;
+    esac
+
+    # Fetch latest Go version and install
+    version=$(curl -s https://go.dev/VERSION?m=text | head -n1)
+    if [[ -z "$version" ]]; then
+        echo "Failed to determine latest Go version"
+        exit 1
+    fi
+
+    url="https://go.dev/dl/${version}.linux-${go_arch}.tar.gz"
+    tmp_tar="/tmp/go-${version}.tar.gz"
+    echo "Downloading $url"
+    curl -L -o "$tmp_tar" "$url"
+
+    # Install to /usr/local and create symlinks
+    sudo rm -rf /usr/local/go
+    sudo tar -C /usr/local -xzf "$tmp_tar"
+    rm -f "$tmp_tar"
+
+    # Ensure go and gofmt are on PATH via symlinks
+    if [[ -x /usr/local/go/bin/go ]]; then
+        sudo ln -sf /usr/local/go/bin/go /usr/local/bin/go
+        sudo ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
+    fi
+elif [[ "$os" == "macos" ]]; then
+    # Install dependencies
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+
+    # Install Go via Homebrew
+    brew install go
+else
+    echo "Unsupported operating system"
+    exit 1
+fi
+
