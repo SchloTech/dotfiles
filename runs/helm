@@ -12,6 +12,32 @@ if [[ "$os" == "linux" ]] || [[ "$os" == "macos" ]]; then
     # Download and install Helm
     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
     chmod 700 get_helm.sh
+
+    install_dir="/usr/local/bin"
+    use_sudo="true"
+
+    if command -v brew >/dev/null 2>&1; then
+        brew_bin="$(brew --prefix 2>/dev/null)/bin"
+        if [[ -n "$brew_bin" ]]; then
+            install_dir="$brew_bin"
+        fi
+    elif [[ -n "$HOME" ]]; then
+        install_dir="$HOME/.local/bin"
+    fi
+
+    if [[ -d "$install_dir" && -w "$install_dir" ]]; then
+        use_sudo="false"
+    elif [[ ! -d "$install_dir" && -w "$(dirname "$install_dir")" ]]; then
+        # Directory is missing but can be created without sudo
+        mkdir -p "$install_dir"
+        use_sudo="false"
+    fi
+
+    export HELM_INSTALL_DIR="$install_dir"
+    if [[ "$use_sudo" == "false" ]]; then
+        export USE_SUDO=false
+    fi
+
     ./get_helm.sh
     rm get_helm.sh
 else
