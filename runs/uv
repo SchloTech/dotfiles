@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+source "$script_dir/../utils/os_detect.sh"
+
+set -euo pipefail
+
+os=$(detect_os)
+
+if [[ "$os" == "linux" ]]; then
+    # Ensure required tools
+    install_packages curl
+
+    # Install uv using the official installer (installs to ~/.local/bin by default)
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    # Ensure ~/.local/bin is on PATH for future shells
+    if [ -f "$HOME/.zshrc" ] && ! grep -q "\$HOME/.local/bin" "$HOME/.zshrc"; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+        echo "Added ~/.local/bin to PATH in ~/.zshrc"
+    fi
+
+elif [[ "$os" == "macos" ]]; then
+    # Prefer Homebrew on macOS
+    if ! command -v brew &>/dev/null; then
+        install_homebrew
+    fi
+    brew install uv
+else
+    echo "Unsupported operating system"
+    exit 1
+fi
+
+# Print installed version for confirmation
+if command -v uv &>/dev/null; then
+    echo "uv installed: $(uv --version)"
+else
+    echo "uv installation completed, but 'uv' not found on PATH in this session."
+    echo "You may need to reload your shell (e.g., 'exec zsh')."
+fi
+
