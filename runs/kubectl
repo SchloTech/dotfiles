@@ -25,3 +25,20 @@ else
     echo "Unsupported operating system"
     exit 1
 fi
+
+# Enable zsh completion (idempotent)
+if command -v kubectl &>/dev/null; then
+    if [ -f "$HOME/.zshrc" ]; then
+        if ! grep -q "kubectl completion zsh" "$HOME/.zshrc"; then
+            echo 'if command -v kubectl >/dev/null 2>&1; then source <(kubectl completion zsh); fi' >> "$HOME/.zshrc"
+            echo "Added kubectl zsh completion to ~/.zshrc"
+        fi
+        # If an alias 'k' exists, ensure it gets completion too
+        if grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zshrc"; then
+            if ! grep -q "compdef __start_kubectl k" "$HOME/.zshrc"; then
+                echo 'compdef __start_kubectl k' >> "$HOME/.zshrc"
+                echo "Enabled completion for alias 'k'"
+            fi
+        fi
+    fi
+fi

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! command -v kubectl &>/dev/null; then
+  echo "kubectl is not installed or not on PATH."
+  echo "Run './run kubectl' first, then re-run this script."
+  exit 1
+fi
+
+ZSHRC="$HOME/.zshrc"
+if [ ! -f "$ZSHRC" ]; then
+  echo "~/.zshrc not found; creating it to add completion setup."
+  touch "$ZSHRC"
+fi
+
+# Add main kubectl completion (zsh)
+if ! grep -q "kubectl completion zsh" "$ZSHRC"; then
+  echo 'if command -v kubectl >/dev/null 2>&1; then source <(kubectl completion zsh); fi' >> "$ZSHRC"
+  echo "Added kubectl zsh completion to ~/.zshrc"
+else
+  echo "kubectl zsh completion already present in ~/.zshrc"
+fi
+
+# If alias k exists, add completion for it
+if grep -qE "^alias[[:space:]]+k=.*kubectl" "$ZSHRC"; then
+  if ! grep -q "compdef __start_kubectl k" "$ZSHRC"; then
+    echo 'compdef __start_kubectl k' >> "$ZSHRC"
+    echo "Enabled completion for alias 'k'"
+  else
+    echo "Completion for alias 'k' already present"
+  fi
+else
+  echo "Alias 'k' not found in ~/.zshrc; skipping alias completion."
+  echo "Add 'alias k=\"kubectl\"' if you want 'k' completion, then rerun."
+fi
+
+echo "Done. Restart your shell or run: exec zsh"
+
