@@ -22,8 +22,13 @@ else
   echo "kubectl zsh completion already present in ~/.zshrc"
 fi
 
-# If alias k exists, add completion for it
-if grep -qE "^alias[[:space:]]+k=.*kubectl" "$ZSHRC"; then
+# If alias k exists in any zsh startup file, add completion for it (into ~/.zshrc)
+HAS_K_ALIAS=0
+if grep -qE "^alias[[:space:]]+k=.*kubectl" "$ZSHRC" 2>/dev/null; then HAS_K_ALIAS=1; fi
+if [ -f "$HOME/.zsh_profile" ] && grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zsh_profile"; then HAS_K_ALIAS=1; fi
+if [ -f "$HOME/.zprofile" ] && grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zprofile"; then HAS_K_ALIAS=1; fi
+
+if [ "$HAS_K_ALIAS" -eq 1 ]; then
   if ! grep -q "compdef __start_kubectl k" "$ZSHRC"; then
     echo 'compdef __start_kubectl k' >> "$ZSHRC"
     echo "Enabled completion for alias 'k'"
@@ -31,9 +36,8 @@ if grep -qE "^alias[[:space:]]+k=.*kubectl" "$ZSHRC"; then
     echo "Completion for alias 'k' already present"
   fi
 else
-  echo "Alias 'k' not found in ~/.zshrc; skipping alias completion."
-  echo "Add 'alias k=\"kubectl\"' if you want 'k' completion, then rerun."
+  echo "Alias 'k' not found in ~/.zshrc, ~/.zsh_profile, or ~/.zprofile; skipping alias completion."
+  echo "Add 'alias k=\"kubectl\"' to one of those files if you want 'k' completion, then rerun."
 fi
 
 echo "Done. Restart your shell or run: exec zsh"
-

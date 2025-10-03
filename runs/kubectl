@@ -33,8 +33,11 @@ if command -v kubectl &>/dev/null; then
             echo 'if command -v kubectl >/dev/null 2>&1; then source <(kubectl completion zsh); fi' >> "$HOME/.zshrc"
             echo "Added kubectl zsh completion to ~/.zshrc"
         fi
-        # If an alias 'k' exists, ensure it gets completion too
-        if grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zshrc"; then
+
+        # If an alias 'k' exists in zsh config files, ensure it gets completion too
+        if grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zshrc" \
+           || [ -f "$HOME/.zsh_profile" ] && grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zsh_profile" \
+           || [ -f "$HOME/.zprofile" ] && grep -qE "^alias[[:space:]]+k=.*kubectl" "$HOME/.zprofile"; then
             if ! grep -q "compdef __start_kubectl k" "$HOME/.zshrc"; then
                 echo 'compdef __start_kubectl k' >> "$HOME/.zshrc"
                 echo "Enabled completion for alias 'k'"
