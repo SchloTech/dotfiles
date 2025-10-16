@@ -1,24 +1,51 @@
 #!/usr/bin/env bash
 
-selected=$(find ~/personal ~/work ~/work/nextlayertech -maxdepth 1 -mindepth 1 -type d | fzf)
+# Build a list of selectable directories:
+# - Include the top-level personal and work dirs themselves
+# - Include their immediate subdirectories
+# - Include immediate subdirectories under work/nextlayertech if present
+
+dirs=()
+
+add_if_exists() {
+  [[ -d "$1" ]] && dirs+=("$1")
+}
+
+add_immediate_subdirs() {
+  local root="$1"
+  if [[ -d "$root" ]]; then
+    while IFS= read -r d; do
+      dirs+=("$d")
+    done < <(find "$root" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+  fi
+}
+
+add_if_exists "$HOME/personal"
+add_if_exists "$HOME/work"
+
+add_immediate_subdirs "$HOME/personal"
+add_immediate_subdirs "$HOME/work"
+add_immediate_subdirs "$HOME/work/nextlayertech"
+
+selected=$(printf "%s\n" "${dirs[@]}" | sort -u | fzf)
 if [[ -z "$selected" ]]; then
-    exit 0
+  exit 0
 fi
-selected_name=$(basename $selected | tr ".,: " "____")
+
+selected_name=$(basename "$selected" | tr ".,: " "____")
 
 switch_to() {
-    if [[ -z "$TMUX" ]]; then
-        tmux attach-session -t $selected_name
-    else
-        tmux switch-client -t $selected_name
-    fi
-
+  if [[ -z "$TMUX" ]]; then
+    tmux attach-session -t "$selected_name"
+  else
+    tmux switch-client -t "$selected_name"
+  fi
 }
 
 if tmux has-session -t="$selected_name" 2>/dev/null; then
-    switch_to
+  switch_to
 else
-    tmux new-session -ds $selected_name -c $selected
-    switch_to
-    tmux send-key -t $selected_name "ready-tmux" ^M
+  tmux new-session -ds "$selected_name" -c "$selected"
+  switch_to
+  tmux send-key -t "$selected_name" "ready-tmux" ^M
 fi
